@@ -1,8 +1,6 @@
 #! /bin/bash
 
 BACKUP_DIR=~/backup
-SNAPSHOT=${BACKUP_DIR}/snapshot.snar
-touch -p $SNAPSHOT
 EE_DIR=/opt/easyengine/sites/
 DATE=$(date +%Y%m%d%H%M%S)
 mkdir -p $BACKUP_DIR
@@ -15,6 +13,8 @@ for site in $(ls $EE_DIR); do
                 echo "---------------------------------------------"
 
                 sitedir=$EE_DIR/$site
+		SNAPSHOT=${BACKUP_DIR}/${site}_snapshot.snar
+		touch  $SNAPSHOT
 
                 echo "Backing up code and uploads..."
                 # backup wp code and upload
@@ -32,16 +32,14 @@ for site in $(ls $EE_DIR); do
 
                 if [ ! -f "$BACKUP_DIR/${site}_full_backup.tar.gz"  ]; then
 			backup_file="$BACKUP_DIR/${site}_full_backup.tar.gz"
-			tar -czf "$backup_file" -g $SNAPSHOT  -C "${BACKUP_DIR}/${site}_tmp/" .
+			tar -czf "$backup_file" --listed-incremental="$SNAPSHOT"  -C "${BACKUP_DIR}/${site}_tmp/" .
 		else
 			backup_file="$BACKUP_DIR/${site}_increment_${DATE}.tar.gz"
-			tar -czf "$backup_file" -g $SNAPSHOT  -C "${BACKUP_DIR}/${site}_tmp/" .
+			tar -czf "$backup_file" --listed-incremental="$SNAPSHOT"  -C "${BACKUP_DIR}/${site}_tmp/" .
 		fi
 
-                rm -r "${BACKUP_DIR}/${site}_tmp"
+               # rm -r "${BACKUP_DIR}/${site}_tmp"
                 #rm "$backup_file"
-
-
         fi
 done
 
