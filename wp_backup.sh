@@ -3,7 +3,8 @@
 BACKUP_DIR=~/backup
 EE_DIR=/opt/easyengine/sites/
 DATE=$(date +%Y%m%d%H%M%S)
-mkdir -p BACKUP_DIR
+mkdir -p $BACKUP_DIR
+rclone mkdir WP-backup
 for site in $(ls $EE_DIR); do
 #	echo $site
 	check=$(ee site info "$site" | grep -i "WordPress")
@@ -30,11 +31,16 @@ for site in $(ls $EE_DIR); do
 
 		tar -czf "$backup_file" -C "${BACKUP_DIR}/${site}_tmp/" .
 		
+		rclone copy "${backup_file}" google-remote:WP-backup
 		rm -r "${BACKUP_DIR}/${site}_tmp"
-
+                rm "$backup_file"
+		
 
 	fi	
 done
+
+#delete directory
+rm -r $BACKUP_DIR
 
 # Delete all the backups older than 7 days
 find "${BACKUP_DIR}" -type f -name "*.tar.gz" -ctime +7 -exec rm -r {} \;
