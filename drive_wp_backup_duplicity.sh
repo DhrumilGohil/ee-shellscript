@@ -1,8 +1,6 @@
 #! /bin/bash
 
-BACKUP_DIR=~/backup
 EE_DIR=/opt/easyengine/sites/
-mkdir -p $BACKUP_DIR
 for site in $(ls $EE_DIR); do
 #       echo $site
         check=$(ee site info "$site" | grep -i "WordPress")
