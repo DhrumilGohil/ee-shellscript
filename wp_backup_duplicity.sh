@@ -9,7 +9,8 @@ for site in $(ls $EE_DIR); do
         if [ ! -z "$check" ]; then
                 echo "Starting WordPress EasyEngine backup for ${site}"
                 echo "---------------------------------------------"
-
-		PASSPHRASE="" duplicity --encrypt-key=2349166A7DE7FCC0537CEDA47A335E00B8E26D91 "${EE_DIR}/${site}/app/htdocs" "file://$BACKUP_DIR"
+		site_bakup_dir=${BACKUP_DIR}/${site}
+		mkdir -p $site_bakup_dir
+		PASSPHRASE="" duplicity  --encrypt-key=2349166A7DE7FCC0537CEDA47A335E00B8E26D91 "${EE_DIR}/${site}/app/htdocs" "file://${site_bakup_dir}"
 	fi
 done
